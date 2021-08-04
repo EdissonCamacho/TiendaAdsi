@@ -1,0 +1,56 @@
+.navbar {
+    margin-bottom: 50px;
+    border-radius: 0;
+}
+
+
+/* Remove the jumbotron's default bottom margin */
+
+.jumbotron {
+    margin-bottom: 0;
+}
+
+
+/* Add a gray background color and some padding to the footer */
+
+footer {
+    background-color: #f2f2f2;
+    padding: 25px;
+}
+
+.carousel-inner img {
+    width: 100%;
+    /* Set width to 100% */
+    margin: auto;
+    min-height: 200px;
+}
+
+
+/* Hide the carousel text when the screen is less than 600 pixels wide */
+
+@media (max-width: 600px) {
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.mc-margenes {
+    margin-top: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.mc-contenedorPrecios {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.mc-iconos {
+    margin-left: 5px;
+    margin-top: 6px;
+}
+
+.mc_links {
+    cursor: pointer;
+}
