@@ -3,7 +3,7 @@
 class Conexion{
     public static function conectar(){
         $nombreServidor = "localhost";
-        $baseDatos = "adsitienda";
+        $baseDatos = "tiendaadsi";
         $usuario = "root";
         $password = "";
 

@@ -1,5 +1,6 @@
 <?php
 
+
 require_once "controladores/plantillaControlador.php";
 require_once "controladores/productosControlador.php";
 

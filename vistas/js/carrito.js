@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     var ListaCarrito = [];
     cargarCarrito();
     totalCarrito();
@@ -37,7 +37,7 @@ $(document).ready(function() {
 
 
     // capturar el foco de la caja numerica de cantidades
-    $("#tablaCarrito").on("change", "#cantidad", function() {
+    $("#tablaCarrito").on("change", "#cantidad", function () {
         var cantidad = $(this).val();
         var precio = $(this).parent().parent().children("#columnaPrecio").html();
         var subtotal = $(this).parent().parent().children("#columnaPrecioTotal").html((cantidad * precio));
@@ -62,7 +62,7 @@ $(document).ready(function() {
 
     })
 
-    $("#tablaCarrito").on("click", "#btnEliminarProducto", function() {
+    $("#tablaCarrito").on("click", "#btnEliminarProducto", function () {
 
         idProducto = $(this).attr("idProducto");
         var listaTemporal = [];
@@ -152,18 +152,20 @@ $(document).ready(function() {
 
     }
 
-    $("#btnPagos").click(function() {
+    $("#btnPagos").click(function () {
         $("#listadoProductos").html("");
         var subtotalPagar = 0;
         var valorTotalEnvio = 0;
         var impuesto = 0;
         var descripcionFinal = [];
         var contador = 0;
+        
 
         var listaCompra = JSON.parse(localStorage.getItem("carrito"));
 
         var concatenar = "";
         listaCompra.forEach(cargarTablaPago);
+        console.log(listaCompra);
 
         function cargarTablaPago(item, index) {
 
@@ -172,7 +174,7 @@ $(document).ready(function() {
             impuesto += (subtotal * 0.19);
             valorTotalEnvio += envio;
             subtotalPagar += subtotal;
-            description[contador] = item.nombre;
+           descripcionFinal[contador] = item.nombre;
 
             concatenar += '<tr>';
             concatenar += '<td>' + item.nombre + '</td>';
@@ -192,14 +194,21 @@ $(document).ready(function() {
         $("#colValorEnvio").html("$" + " " + valorTotalEnvio);
         $("#colValorImpuestos").html("$" + impuesto);
         $("#colTotalCompra").html(subtotalPagar + valorTotalEnvio + impuesto);
+        var totalcompra=subtotalPagar + valorTotalEnvio + impuesto;
 
-        EnviarDatos(descripcionFinal);
+        EnviarDatos(descripcionFinal,subtotalPagar,valorTotalEnvio,totalcompra,impuesto);
 
 
     })
 
-    function EnviarDatos(descripcionFinal) { //crea el formalario de pago
-        var listaCompra = JSON.parse(localStorage.getItem("carrito"));
+    function EnviarDatos(descripcionFinal,subtotalPagar,valorTotalEnvio,totalcompra,impuesto) { //crea el formalario de pago
+
+
+        var descripcion2 = descripcionFinal.toString();
+        var productos=descripcion2.replace(/,/g,"-"); //  reemplaza un string por otro
+
+
+        //var listaCompra = JSON.parse(localStorage.getItem("carrito"));
         var concatenar = "";
         //listaCompra.forEach();
         var mensaje = "encyptacion";
@@ -208,37 +217,41 @@ $(document).ready(function() {
         var APIKey = "4Vj8eK4rloUd272L48hsrarnUA";
         var accountId = "512321";
         var lng = "es";
+        var referenceCode=Math.ceil(Math.random()*1000000)+ totalcompra;
+        var taxReturnBase = (totalcompra-impuesto).toFixed(2);
+        var inicio="https://localhost/tiendaAdsi/index.php";
+        var declinada="https://localhost/tiendaAdsi/declinada";
 
 
 
 
 
 
-        var description = "";
         // var md5 = CryptoJS.MD5(APIKey + "~" + merchantId + "~" + codigo + "~" + monto + "~COP"); // encryptacion md5
-        var subtotal = 0;
+       
 
 
 
 
-        var md5 = CryptoJS.MD5(APIKey + "~" + merchantId + "~" + "testPayu" + "~" + subtotal + "~COP"); // encryptacion md5
+        var md5 = CryptoJS.MD5(APIKey + "~" + merchantId + "~" + referenceCode+ "~" + totalcompra + "~COP"); // encryptacion md5
         concatenar += '<form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">';
-        concatenar += '<input name="merchantId"    type="hidden"  value="508029"   >';
-        concatenar += '<input name="accountId"     type="hidden"  value="512321" >';
-        concatenar += '  <input name="description"   type="hidden"  value="' + description + '"  >';
-        concatenar += ' <input name="referenceCode" type="hidden"  value="' + "testPayu" + '" >';
-        concatenar += '<input name="amount"        type="hidden"  value="' + subtotal + '"   >';
-        concatenar += '<input name="tax"           type="hidden"  value="0"  >';
-        concatenar += '<input name="taxReturnBase" type="hidden"  value="0" >';
-        concatenar += '<input name="shipmentValue" type="hidden"  value="" >'; // el usuario ingresa los valores 
+        concatenar += '<input name="merchantId"    type="hidden"  value="'+merchantId+'"   >';
+        concatenar += '<input name="accountId"     type="hidden"  value="'+accountId+'" >';
+        concatenar += '  <input name="description"   type="hidden"  value="' +productos + '"  >';
+        concatenar += ' <input name="referenceCode" type="hidden"  value="' + referenceCode + '" >';
+        concatenar += '<input name="amount"        type="hidden"  value="' + totalcompra + '"   >';
+        concatenar += '<input name="tax"           type="hidden"  value="'+impuesto+'"  >';
+        concatenar += '<input name="taxReturnBase" type="hidden"  value="'+taxReturnBase+'" >';
+        concatenar += '<input name="shipmentValue" type="hidden"  value="'+valorTotalEnvio+'" >'; // el usuario ingresa los valores 
 
         concatenar += '<input name="currency"      type="hidden"  value="COP" >';
-        concatenar += '<input name="lng"      type="hidden"  value="COP" >';
+        concatenar += '<input name="lng"      type="hidden"  value="'+lng+'" >';
         concatenar += '<input name="signature"     type="hidden"  value="' + md5 + '"  >',
             concatenar += '<input name="test"          type="hidden"  value="1" >';
-        concatenar += '<input name="responseUrl"    type="hidden"  value="" >';
-        concatenar += '<input name="confirmationUrl"    type="hidden"  value="" >';
-        concatenar += '<input name="displayShippingInformation" type="hidden" value="">';
+        concatenar += '<input name="responseUrl"    type="hidden"  value="'+inicio+'" >';
+        //concatenar += '<input name="confirmationUrl"    type="hidden"  value="" >';
+        concatenar += '<input name="declinedResponseUrl"    type="hidden"  value="'+declinada+'" >';
+        concatenar += '<input name="displayShippingInformation" type="hidden" value="YES">';
         concatenar += '<input name="Submit"  class="btn btn-block btn-lg btn-primary"      type="submit"  value="Enviar" >';
         concatenar += '</form>';
 
